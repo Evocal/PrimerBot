@@ -6,6 +6,7 @@ bot.on('message', message => {
         message.channel.send("pong");
     }
     
+    //Funciona
     if (message.content.startsWith('!random')) {
         var content = message.content.split(" ");
 
@@ -36,6 +37,37 @@ bot.on('message', message => {
         }
         message.channel.send("Random entre " + x + " y " + y + ".");
         message.channel.send(Math.floor(Math.random() * ((y - x) + 1) + (x)));
+    }
+    
+    
+    if (message.content.startsWith('!purge')) {
+        var content = message.content.split(" ");
+        if (content.length < 2) {
+            message.channel.send("Error de formato: Insuficiente numero de argumentos");
+            message.channel.send("Formato: !purge <cantidad>");
+            return;
+        } else {
+            if (message.author.id != 224571309420445698) {  //No tocar
+                message.channel.send('No tienes privilegios');
+                return;
+            }
+
+            if (isNaN(content[1])) {
+                message.channel.send('Error de formato: Segundo argumento no es un numero');
+                message.channel.send("Formato: !purge <cantidad>");
+                return;
+            }
+
+            var cantidad = parseInt(content[1]);
+
+            if (cantidad <= 0) {
+                message.channel.send('Error de formato: Segundo argumento debe ser mayor de 0');
+                message.channel.send("Formato: !purge <cantidad>");
+                return;
+            }
+            message.channel.bulkDelete(cantidad + 1);
+            message.channel.send("Eliminados " + cantidad + " mensajes.");
+        }
     }
     
 });
