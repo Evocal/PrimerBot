@@ -125,6 +125,144 @@ bot.on('message', message => {
         }
     }
     
+    
+      if (message.content.startsWith('!write')) {
+        var content = message.content.split(" ");
+
+        if (content.length < 3) {
+            message.channel.send("Error de formato: Insuficiente numero de argumentos");
+            message.channel.send("Formato: !write <titulo> <texto>");
+            return;
+        }
+        var infoText = message.content.substring(content[0].length + content[1].length + 2);
+        var state = añadirEtiqueta(message.author.id, content[1], infoText);
+
+
+        if (state === -1) {
+            message.channel.send("Error: El titulo especificado ya existe");
+            return;
+        } else {
+            message.channel.send("Etiqueta: " + content[1] + " con el texto: " + infoText + " ha sido creado.");
+            guardarInfo();
+        }
+
+    }
+
+    //Leer etiqueta
+
+    if (message.content.startsWith('!read')) {
+        var content = message.content.split(" ");
+
+        if (content.length < 2) {
+            message.channel.send("Error de formato: Insuficiente numero de argumentos");
+            message.channel.send("Formato: !read <titulo>");
+            return;
+        }
+
+        var state = leerEtiqueta(content[1]);
+
+        if (state === -1) {
+            message.channel.send("Error: No existe etiqueta con el titulo especificado");
+            return;
+        } else if (state === 0) {
+            message.channel.send(data[content[1]].info);
+            guardarInfo();
+        }
+    }
+
+    //Borrar etiqueta
+
+    if (message.content.startsWith('!delete')) {
+        var content = message.content.split(" ");
+
+        if (content.length < 2) {
+            message.channel.send("Error de formato: Insuficiente numero de argumentos");
+            message.channel.send("Formato: !delete <titulo>");
+            return;
+        }
+
+        var state = borrarEtiqueta(message.author.id, content[1]);
+
+        if (state === -1) {
+            message.channel.send("Error: No existe etiqueta con el titulo especificado");
+            return;
+        } else if (state === -2) {
+            message.channel.send("Error: No puedes borrar la etiqueta si no eres el dueño");
+            return;
+        } else {
+            delete data[content[1]];
+            message.channel.send("Etiqueta " + content[1] + " borrada.");
+            guardarInfo();
+        }
+
+    }
+
+    //Editar etiqueta
+
+    if (message.content.startsWith('!edit')) {
+        var content = message.content.split(" ");
+
+        if (content.length < 3) {
+            message.channel.send("Error de formato: Insuficiente numero de argumentos");
+            message.channel.send("Formato: !edit <titulo> <contenido>");
+            return;
+        }
+
+        var infoText = message.content.substring(content[0].length + content[1].length + 2);
+        var state = editarEtiqueta(message.author.id, content[1], infoText);
+
+        if (state === -1) {
+            message.channel.send("Error: No puedes editar la etiqueta si no eres el dueño");
+            return;
+        } else if (state === -2) {
+            message.channel.send("Error: No existe etiqueta con el titulo especificado");
+            return;
+        } else {
+            data[content[1]].info = infoText;
+            message.channel.send("Contenido de etiqueta " + content[1] + " modificado a " + infoText);
+            guardarInfo();
+        }
+
+    }
+
+    //Copiar etiqueta
+
+    if (message.content.startsWith('!copy')) {
+        var content = message.content.split(" ");
+
+        if (content.length < 3) {
+            message.channel.send("Error de formato: Insuficiente numero de argumentos");
+            message.channel.send("Formato: !edit <titulo a copiar> <nuevo titulo>");
+            return;
+        }
+
+        var state = copiarEtiqueta(message.author.id, content[1], content[2]);
+
+        if (state === -1) {
+            message.channel.send("Error: No puedes copiar la etiqueta si no eres el dueño");
+            return;
+        } else if (state === -2) {
+            message.channel.send("Error: No existe etiqueta con el titulo especificado");
+            return;
+        } else if (state === -3) {
+            message.channel.send("Error: El nuevo nombre de etiqueta ya existe");
+            return;
+        } else {
+            var str = data[content[1]].info;
+            data[content[2]] = {
+                autor: message.author.id,
+                titulo: content[2],
+                info: str
+            };
+            message.channel.send("Contenido de etiqueta " + content[1] + " copiado a " + content[2]);
+            delete data[content[1]];
+            message.channel.send("Etiqueta " + content[1] + " eliminada.");
+            guardarInfo();
+        }
+
+    }
+    
+    
 });
 
 bot.on('guildMemberAdd', member => {
