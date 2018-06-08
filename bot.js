@@ -13,6 +13,15 @@ try {
     data = {};
 }
 
+var banish; // Lectura JSON
+
+try {
+    banish = require('./banish.json');
+} catch (err) {
+    console.log(err);
+    data = {};
+}
+
 //Variables compuestas
 
 var prototipo = {
@@ -21,9 +30,22 @@ var prototipo = {
     info: 'Something something'
 };
 
-
+var prototipoBanish = {
+    autor: '0',
+    target: '0'
+};
 
 bot.on('message', message => {
+    
+     //Detect banish
+
+    var autor = message.author.id;
+
+    if (banish[autor]) {
+        message.delete();
+    }
+    
+    
     if (message.content === '!ping') {
         message.channel.send("retraso");
     }
@@ -262,6 +284,67 @@ bot.on('message', message => {
 
     }
     
+    if (message.content.startsWith('!banish')) {
+        var content = message.content.split(" ");
+
+        if (content.length < 2) {
+            message.channel.send("Error de formato: Insuficiente numero de argumentos");
+            message.channel.send("Formato: !banish <usuario>");
+            return;
+        }
+
+        if (message.author.id != 224571309420445698) { //No tocar
+            message.channel.send("Error: No tienes los privilegios para usar este comando");
+            return;
+        }
+
+        let user = null;
+        user = message.mentions.users.first();
+
+        if (user == null) {
+            message.channel.send("Error: No has mencionado a nadie");
+            return;
+        }
+
+        banish[user.id] = {
+            autor: message.author.id,
+        };
+
+        message.delete();
+        message.author.sendMessage("El usuario " + user + " ha sido targeteado para borrar sus mensajes.");
+        guardarBInfo();
+    }
+
+    //Desbanear
+
+    if (message.content.startsWith('!unbanish')) {
+        var content = message.content.split(" ");
+
+        if (content.length < 2) {
+            message.channel.send("Error de formato: Insuficiente numero de argumentos");
+            message.channel.send("Formato: !banish <usuario>");
+            return;
+        }
+
+        if (message.author.id != 224571309420445698) { //No tocar
+            message.channel.send("Error: No tienes los privilegios para usar este comando");
+            return;
+        }
+
+        let user = null;
+        user = message.mentions.users.first();
+
+        if (user == null) {
+            message.channel.send("Error: No has mencionado a nadie");
+            return;
+        }
+
+        delete banish[user.id];
+
+        message.delete();
+        message.author.sendMessage("El usuario " + user + " ha sido desbaneado");
+        guardarBInfo();
+    }   
     
 });
 
@@ -340,9 +423,11 @@ function guardarInfo() {
     fs.writeFile('data.json', JSON.stringify(data), "utf8");
 }
 
+//Guardado de info(banish)
 
-
-
+function guardarBInfo() {
+    fs.writeFile('banish.json', JSON.stringify(banish), "utf8");
+}
 
 bot.on('ready', () => {
 
