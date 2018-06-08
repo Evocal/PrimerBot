@@ -6,6 +6,39 @@ bot.on('message', message => {
         message.channel.send("pong");
     }
     
+        if (message.content === '!who are you') {
+        message.channel.send("SALUTATIONS! My name is Penny Bot, a recreation of " +
+                "Penny Polendina, and I am a test bot where my creator @Evocal#8259 " +
+                "test new and amazing stuff!");
+    }
+
+    //YAY
+
+    if (message.content === '!good job') {
+        message.channel.send("https://i.imgur.com/IFytnDn.gif");
+    }
+
+    //Mostrar Avatar
+
+    if (message.content.startsWith('!avatar')) {
+        let user = null;
+        user = message.mentions.users.first();
+
+        if (user == null) {
+            message.channel.send("Error: No has mencionado a nadie");
+            return;
+        }
+
+        message.channel.send(user.avatarURL);
+    }
+    //Monstrar UID
+
+    if (message.content.startsWith('!uid')) {
+
+        message.channel.send(message.author.id);
+    }
+    
+    
     //Funciona
     if (message.content.startsWith('!random')) {
         var content = message.content.split(" ");
@@ -38,7 +71,7 @@ bot.on('message', message => {
         message.channel.send("Random entre " + x + " y " + y + ".");
         message.channel.send(Math.floor(Math.random() * ((y - x) + 1) + (x)));
     }
-    
+    //Funciona
     
     if (message.content.startsWith('!purge')) {
         var content = message.content.split(" ");
