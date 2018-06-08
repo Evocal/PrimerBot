@@ -1,6 +1,28 @@
 var Discord = require('discord.js'); //Necesario para usar API de discord
 var bot = new Discord.Client(); //Necesario escucha cliente.
 
+
+
+var fs = require("fs"); //Lectura de ficheros
+var data; // Lectura JSON
+
+try {
+    data = require('./data.json');
+} catch (err) {
+    console.log(err);
+    data = {};
+}
+
+//Variables compuestas
+
+var prototipo = {
+    autor: '0',
+    titulo: '0',
+    info: 'Something something'
+};
+
+
+
 bot.on('message', message => {
     if (message.content === '!ping') {
         message.channel.send("pong");
@@ -108,6 +130,81 @@ bot.on('message', message => {
 bot.on('guildMemberAdd', member => {
     member.sendMessage("Bienvenido! Para obtener acceso completo al servidor pide a un admin que te de el rango 'Member'.");
 });
+
+
+
+//Funcion de "write
+
+function añadirEtiqueta(idAutor, Titulo, texto) {
+    if (data[Titulo]) {
+        return -1;
+    } else {
+        data[Titulo] = {
+            autor: idAutor,
+            titulo: Titulo,
+            info: texto
+        };
+        guardarInfo();
+        return 1;
+    }
+}
+
+
+function leerEtiqueta(Titulo) {
+    if (!data[Titulo]) {
+        return-1;
+    } else {
+        return 0;
+    }
+}
+
+//Borrado etiqueta
+
+function borrarEtiqueta(idAutor, Titulo) {
+    if (!data[Titulo]) {
+        return -1;
+    } else if (data[Titulo].autor !== idAutor) {
+        return -2;
+    } else {
+        return 0;
+    }
+}
+
+//Editar etiqueta
+
+function editarEtiqueta(idAutor, Titulo, Texto) {
+    if (!data[Titulo]) {
+        return -2;
+    } else if (data[Titulo].autor !== idAutor) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+//Copiar etiqueta
+
+function copiarEtiqueta(idAutor, Titulo1, Titulo2) {
+    if (data[Titulo2]) {
+        return -3;
+    } else if (!data[Titulo1]) {
+        return -2;
+    } else if (data[Titulo1].autor !== idAutor) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+//Guardado de info
+
+function guardarInfo() {
+    fs.writeFile('data.json', JSON.stringify(data), "utf8");
+}
+
+
+
+
 
 bot.on('ready', () => {
 
