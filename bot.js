@@ -5,6 +5,43 @@ bot.on('message', message => {
     if (message.content === '!ping') {
         message.channel.send("pong");
     }
+    
+    if (message.content.startsWith('!random')) {
+        var content = message.content.split(" ");
+
+        if (content.length < 3) {
+            message.channel.send("Error de formato: Insuficiente numero de argumentos");
+            message.channel.send("Formato: !random <Limite Inf> <Limite Sup>");
+            return;
+        }
+        var x = parseInt(content[1]);
+        var y = parseInt(content[2]);
+
+        if (x >= y) {
+            message.channel.send("Error de formato: Primer argumento debe ser menor que el segundo");
+            message.channel.send("Formato: !random <Limite Inf> <Limite Sup>");
+            return;
+        }
+
+        if (isNaN(content[1]) || isNaN(content[2])) {
+            message.channel.send("Error de formato: Uno de los argumentos especificados no es un numero");
+            message.channel.send("Formato: !random <Limite Inf> <Limite Sup>");
+            return;
+        }
+
+        if (x < 0 || y < 0) {
+            message.channel.send("Error de formato: Uno de los argumentos especificados es menor que 0");
+            message.channel.send("Formato: !random <Limite Inf> <Limite Sup>");
+            return;
+        }
+        message.channel.send("Random entre " + x + " y " + y + ".");
+        message.channel.send(Math.floor(Math.random() * ((y - x) + 1) + (x)));
+    }
+    
+});
+
+bot.on('guildMemberAdd', member => {
+    member.sendMessage("Bienvenido! Para obtener acceso completo al servidor pide a un admin que te de el rango 'Member'.");
 });
 
 bot.on('ready', () => {
