@@ -2,8 +2,8 @@ var Discord = require('discord.js'); //Necesario para usar API de discord
 var bot = new Discord.Client(); //Necesario escucha cliente.
 
 //Esta linea de texto solo sirve para ver como funciona el GitHubDesktop
-//Se supone que al guardar me saldra una cosa verde bonita
-//O no
+//Vemos que funciona
+//O no, esta bien
 
 var fs = require("fs"); //Lectura de ficheros
 var data; // Lectura JSON
